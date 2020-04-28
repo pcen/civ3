@@ -1,4 +1,6 @@
+#define SPLIT_MAIN
 #include <Split>
+#include "geometry/hex.h"
 
 class App : public Split::Application {
 
@@ -6,7 +8,7 @@ class App : public Split::Application {
 
 	void run(void)
 	{
-		m_window->capture_cursor(false);
+		m_window->capture_cursor(true);
 		m_window->use_vsync(false);
 
 		glm::mat4 proj = glm::perspective(glm::radians(45.0f), m_window->aspect_ratio(), 0.01f, 100.0f);
@@ -14,13 +16,12 @@ class App : public Split::Application {
 		auto sh = Split::create_shader("resources\\vert.glsl", "resources\\pixel.glsl");
 		sh->bind();
 
-		vertex_array_ptr va = Split::create_cube();
-
 		Split::Renderer r;
-		r.set_clear_colour({ 0.0f, 0.0f, 0.0f });
+		r.set_clear_colour({ 0.0f, 0.0f, 0.5f });
 		r.use_wireframe(true);
 
-		// glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 1.0f, -3.0f));
+		auto map = new HexBatch();
+		auto va = map->get_va();
 
 		while (m_running)
 		{
@@ -29,6 +30,9 @@ class App : public Split::Application {
 			r.push(sh, va);
 			update();
 		}
+
+		delete map;
+
 	}
 
 };
