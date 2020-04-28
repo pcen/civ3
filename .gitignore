@@ -1,0 +1,17 @@
+# Directories
+**/bin
+**/obj
+
+
+# Visual Studio
+.vs
+*.vcxproj**
+*.sln
+cpp.hint
+
+# Visual Studio Code
+.vscode
+
+# Scripts
+*.sh
+
