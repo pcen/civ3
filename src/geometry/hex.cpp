@@ -1,7 +1,5 @@
 #include "hex.h"
-
-#define cos(angle) ((float)std::cos(glm::radians((angle))))
-#define sin(angle) ((float)std::sin(glm::radians((angle))))
+#include "utils/math.h"
 
 #define HEX_VERT_NUM   18
 #define HEX_POINTS_NUM 6
@@ -29,9 +27,7 @@ SingleHex::~SingleHex() {}
 
 HexBatch::HexBatch()
 {
-	m_hexs.push_back(SingleHex(0, 0));
 	m_shader = new Split::Shader("resources\\vert.glsl", "resources\\pixel.glsl");
-	generate_mesh();
 }
 
 HexBatch::~HexBatch()
@@ -44,6 +40,11 @@ va_ref& HexBatch::get_va(void)
 	if (m_va == nullptr)
 		gen_va();
 	return m_va;
+}
+
+void HexBatch::add(float x, float y)
+{
+	m_hexs.push_back(SingleHex(x, y));
 }
 
 void HexBatch::gen_ib(void)

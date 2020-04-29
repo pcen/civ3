@@ -7,7 +7,6 @@ struct SingleHex
 {
 	SingleHex(float x, float y, float z = 0.0f);
 	~SingleHex();
-
 	float m_x, m_y, m_z;
 };
 
@@ -18,7 +17,7 @@ public:
 	~HexBatch();
 
 	va_ref& get_va(void);
-
+	void add(float x, float y);
 	void generate_mesh(void);
 
 private:

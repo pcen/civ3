@@ -1,27 +1,10 @@
-#include "hex_map.h"
-
-static float f0 = std::sqrt(3.0f);
-static float f1 = std::sqrt(3.0f) / 2.0f;
-static float f2 = 0.0f;
-static float f3 = 3.0f / 2.0f;
-
-static float b0 = std::sqrt(3.0f) / 3.0f;
-static float b1 = -1.0f / 3.0f;
-static float b2 = 0.0f;
-static float b3 = 2.0f / 3.0f;
-
-glm::vec2 htp(HexTile& h)
-{
-	glm::vec2 v;
-	v.x = f0 * h.x + f1 * h.y;
-	v.y = 0;
-	return v;
-}
+﻿#include "hex_map.h"
+#include "utils/math.h"
 
 /* HexMap implementation
  */
 HexMap::HexMap(int width, int height)
-	: m_hex_w{ width }, m_hex_h{ height }
+	: m_hex_w{ width }, m_hex_h{ height }, batch{ new HexBatch() }
 {
 	/* first 2 hex rows stack evenly before column drops off rectangular edge
 	 */
@@ -33,7 +16,10 @@ HexMap::HexMap(int width, int height)
 	delineate_map();
 }
 
-HexMap::~HexMap() {}
+HexMap::~HexMap()
+{
+	delete batch;
+}
 
 HexTile* HexMap::hex_at(int x, int y)
 {
@@ -50,7 +36,7 @@ HexTile* HexMap::matrix_at(int x, int y)
 	if (y < 0)
 		y += m_buffer_h;
 
-	if (x < 0 || y < 0)
+	if (x < 0 || y < 0 || y * m_buffer_w + x >= m_data.size())
 		std::cerr << "ERROR: invalid matrix index: (" << x << ", " << y << ")\n";
 
 	return &m_data.at(y * m_buffer_w + x);
@@ -70,12 +56,49 @@ void HexMap::print(void)
 	}
 }
 
+void HexMap::print_symbols(void)
+{
+	bool odd = false;
+	for (int y = 0; y < m_buffer_h; y++) {
+		
+		std::stringstream ss;
+		if (odd)
+			ss << " ";
+
+		for (int x = 0; x < m_buffer_w; x++) {
+			if (matrix_at(x, y)->valid)
+				ss << matrix_at(x, y)->symbol << " ";
+		}
+
+		odd = !odd;
+		std::cerr << ss.str() << "\n";
+	}
+}
+
+void HexMap::batch_tiles(void)
+{
+	bool even = true;
+	for (int y = 0; y < m_buffer_h; y++) {
+		int null = 0;
+		float dx = 0.0f;
+		for (int x = 0; x < m_buffer_w; x++) {
+			dx = even ? 0.0f : -cos(30.0f);
+			auto hex = matrix_at(x, y);
+			if (!hex->valid)
+				null++;
+			else
+				batch->add((hex->x - null) * 2 * cos(30.0f) + dx, hex->y * + 3.0f * (cos(30.0f) * tan(30.0f)));
+		}
+		even = !even;
+	}
+}
+
 bool HexMap::init_tiles(void)
 {
 	m_data = std::vector<HexTile>();
 	for (int y = 0; y < m_buffer_h; y++) {
 		for (int x = 0; x < m_buffer_w; x++) {
-			m_data.push_back(HexTile(this, (float)x, (float)y));
+			m_data.push_back(HexTile(this, x, y));
 		}
 	}
 	return true;
@@ -110,12 +133,13 @@ bool HexMap::load_map_data(void)
 
 /* HexTile implementation
  */
-HexTile::HexTile(HexMap* parent, float x, float y, bool is_valid)
-	: map{ parent }, x{ x }, y{ y }, valid{ is_valid } {}
+HexTile::HexTile(HexMap* parent, int x, int y, bool is_valid)
+	: map{ parent }, x{ x }, y{ y }, valid{ is_valid }, symbol{ "O" } {}
 
 void HexTile::invalidate(void)
 {
 	valid = false;
+	symbol = "_";
 }
 
 std::string HexTile::str(void)
@@ -136,9 +160,9 @@ int vec_min(glm::ivec2& v)
 std::vector<HexTile*> HexTile::get_neighbors(void)
 {
 	glm::ivec2 coords_to_check[6] = {
-		{ x - 1, y     }, { x + 1, y     },
-		{ x,     y + 1 }, { x,     y - 1 },
-		{ x - 1, y + 1 }, { x + 1, y - 1 }};
+		{x - 1, y    }, {x + 1, y    },
+		{x,     y + 1}, {x,     y - 1},
+		{x - 1, y + 1}, {x + 1, y - 1}};
 
 	std::vector<HexTile*> neighbors;
 

@@ -2,9 +2,9 @@
 #define HEX_MAP_H
 
 #include <Split>
+#include "geometry/hex.h"
 
 struct HexTile;
-
 
 class HexMap
 {
@@ -15,13 +15,19 @@ public:
 	HexTile* hex_at(int x, int y);
 	HexTile* matrix_at(int x, int y);
 	void print(void);
+	void print_symbols(void);
+
+	void batch_tiles(void);
+	HexBatch* batch;
 
 private:
 	int m_width_buffer;
 	int m_buffer_w, m_buffer_h;
 	int m_hex_w, m_hex_h;
 
+	
 	std::vector<HexTile> m_data;
+
 
 	bool init_tiles(void);
 	bool delineate_map(void);
@@ -30,11 +36,12 @@ private:
 
 struct HexTile
 {
-	HexTile(HexMap* parent, float x, float y, bool is_valid = true);
+	HexTile(HexMap* parent, int x, int y, bool is_valid = true);
 	
-	float x, y;
+	int x, y;
 	HexMap* map;
 	bool valid;
+	std::string symbol;
 
 	void invalidate(void);
 	std::string str(void);
