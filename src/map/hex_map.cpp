@@ -9,7 +9,6 @@ HexMap::HexMap(int width, int height)
 	/* first 2 hex rows stack evenly before column drops off rectangular edge
 	 */
 	m_width_buffer = (int)std::ceil((float)(height - 2) / 2.0f);
-	std::cerr << m_width_buffer << "\n";
 	m_buffer_w = width + m_width_buffer;
 	m_buffer_h = height;
 	init_tiles();

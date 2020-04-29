@@ -55,7 +55,7 @@ void HexBatch::gen_ib(void)
 void HexBatch::gen_va(void)
 {
 	gen_ib();
-	auto vb = Split::create_vertex_buffer(vertex_data(), vertex_size(), STATIC_DRAW);
+	auto vb = Split::create_vertex_buffer(vertex_data(), vertex_count(), STATIC_DRAW);
 	vb->attributes = { {"points", 3} };
 	m_va = Split::create_vertex_array(m_ib, vb);
 }
@@ -95,9 +95,9 @@ unsigned int* HexBatch::index_data(void)
 	return m_indices.data();
 }
 
-unsigned int HexBatch::vertex_size(void)
+unsigned long long HexBatch::vertex_count(void)
 {
-	return m_verticies.size() * sizeof(float);
+	return m_verticies.size();
 }
 
 float* HexBatch::vertex_data(void)

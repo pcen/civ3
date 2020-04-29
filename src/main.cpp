@@ -21,11 +21,12 @@ class App : public Split::Application {
 		r.set_clear_colour({ 0.0f, 0.0f, 0.5f });
 		r.use_wireframe(true);
 
-		auto hm = new HexMap(10, 10);
-		hm->print();
-		hm->print_symbols();
+		auto hm = new HexMap(84, 54);
+		// hm->print();
+		// hm->print_symbols();
 		hm->batch_tiles();
 		hm->batch->generate_mesh();
+
 		auto va = hm->batch->get_va();
 
 		while (m_running)
