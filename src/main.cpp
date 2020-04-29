@@ -1,6 +1,7 @@
 #define SPLIT_MAIN
 #include <Split>
 #include "geometry/hex.h"
+#include "map/hex_map.h"
 
 class App : public Split::Application {
 
@@ -33,8 +34,12 @@ class App : public Split::Application {
 
 		delete map;
 
-	}
+		auto hm = new HexMap(3, 5);
+		hm->print();
 
+		std::cerr << "press key to close\n";
+		std::cin.ignore();
+	}
 };
 
 Split::Application* Split::create_application(void) { return new App(); }

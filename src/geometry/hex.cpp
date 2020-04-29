@@ -1,10 +1,5 @@
 #include "hex.h"
 
-#include <Split>
-#include <cmath>
-
-#define STATIC_DRAW 0x88E4
-
 #define cos(angle) ((float)std::cos(glm::radians((angle))))
 #define sin(angle) ((float)std::sin(glm::radians((angle))))
 
@@ -34,7 +29,7 @@ SingleHex::~SingleHex() {}
 
 HexBatch::HexBatch()
 {
-	m_hexs.push_back(SingleHex(4, 4));
+	m_hexs.push_back(SingleHex(0, 0));
 	m_shader = new Split::Shader("resources\\vert.glsl", "resources\\pixel.glsl");
 	generate_mesh();
 }

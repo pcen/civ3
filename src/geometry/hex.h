@@ -1,8 +1,7 @@
 #ifndef HEX_H
 #define HEX_H
 
-#include <vector>
-#include <memory>
+#include <Split>
 
 struct SingleHex
 {
@@ -11,20 +10,6 @@ struct SingleHex
 
 	float m_x, m_y, m_z;
 };
-
-/* Forward declarations
- */
-namespace Split
-{
-	class VertexArray;
-	class VertexBuffer;
-	class IndexBuffer;
-	class Shader;
-};
-
-typedef std::shared_ptr<Split::VertexArray> va_ref;
-typedef std::shared_ptr<Split::IndexBuffer> ib_ref;
-typedef std::shared_ptr<Split::VertexBuffer> vb_ref;
 
 class HexBatch
 {
