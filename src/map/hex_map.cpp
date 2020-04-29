@@ -1,5 +1,23 @@
 #include "hex_map.h"
 
+static float f0 = std::sqrt(3.0f);
+static float f1 = std::sqrt(3.0f) / 2.0f;
+static float f2 = 0.0f;
+static float f3 = 3.0f / 2.0f;
+
+static float b0 = std::sqrt(3.0f) / 3.0f;
+static float b1 = -1.0f / 3.0f;
+static float b2 = 0.0f;
+static float b3 = 2.0f / 3.0f;
+
+glm::vec2 htp(HexTile& h)
+{
+	glm::vec2 v;
+	v.x = f0 * h.x + f1 * h.y;
+	v.y = 0;
+	return v;
+}
+
 /* HexMap implementation
  */
 HexMap::HexMap(int width, int height)
@@ -8,6 +26,7 @@ HexMap::HexMap(int width, int height)
 	/* first 2 hex rows stack evenly before column drops off rectangular edge
 	 */
 	m_width_buffer = (int)std::ceil((float)(height - 2) / 2.0f);
+	std::cerr << m_width_buffer << "\n";
 	m_buffer_w = width + m_width_buffer;
 	m_buffer_h = height;
 	init_tiles();
@@ -34,8 +53,6 @@ HexTile* HexMap::matrix_at(int x, int y)
 	if (x < 0 || y < 0)
 		std::cerr << "ERROR: invalid matrix index: (" << x << ", " << y << ")\n";
 
-	std::cerr << "accessing " << x << ", " << y << "\n";
-
 	return &m_data.at(y * m_buffer_w + x);
 }
 
@@ -57,7 +74,7 @@ bool HexMap::init_tiles(void)
 {
 	m_data = std::vector<HexTile>();
 	for (int y = 0; y < m_buffer_h; y++) {
-		for (int x = 0; x < m_buffer_h; x++) {
+		for (int x = 0; x < m_buffer_w; x++) {
 			m_data.push_back(HexTile(this, (float)x, (float)y));
 		}
 	}

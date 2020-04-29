@@ -34,11 +34,8 @@ class App : public Split::Application {
 
 		delete map;
 
-		auto hm = new HexMap(3, 5);
+		auto hm = new HexMap(5, 10);
 		hm->print();
-
-		std::cerr << "press key to close\n";
-		std::cin.ignore();
 	}
 };
 
