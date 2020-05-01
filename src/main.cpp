@@ -24,7 +24,6 @@ class App : public Split::Application {
 
 		auto hm = new HexMap(5, 5);
 		hm->print();
-		return;
 
 		hm->batch_tiles();
 		hm->batch->generate_mesh();

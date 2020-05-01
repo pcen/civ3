@@ -66,7 +66,7 @@ void HexMap::batch_tiles(void)
 			if (!h->valid)
 				null++;
 			else
-				batch->add((h->x - null) * x_factor + dx, h->y * y_factor);
+				batch->add((x - null) * x_factor + dx, y * y_factor);
 		}
 		even = !even;
 	}
