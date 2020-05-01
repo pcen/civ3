@@ -2,7 +2,6 @@
 **/bin
 **/obj
 
-
 # Visual Studio
 .vs
 *.vcxproj**
@@ -16,3 +15,6 @@ cpp.hint
 *.sh
 *.bat
 *.py
+
+# Test Assets
+*.jpg

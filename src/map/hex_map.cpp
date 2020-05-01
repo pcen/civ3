@@ -77,33 +77,35 @@ void HexMap::print_symbols(void)
 void HexMap::batch_tiles(void)
 {
 	bool even = true;
+	float y_factor = 3.0f * (cos(30.0f) * tan(30.0f));
+	float x_factor = 2 * cos(30.0f);
+	float dx = 0.0f;
+	
 	for (int y = 0; y < m_buffer_h; y++) {
 		int null = 0;
-		float dx = 0.0f;
 		for (int x = 0; x < m_buffer_w; x++) {
 			dx = even ? 0.0f : -cos(30.0f);
-			auto hex = matrix_at(x, y);
-			if (!hex->valid)
+
+			auto h = matrix_at(x, y);
+			if (!h->valid)
 				null++;
 			else
-				batch->add((hex->x - null) * 2 * cos(30.0f) + dx, hex->y * + 3.0f * (cos(30.0f) * tan(30.0f)));
+				batch->add((h->x - null) * x_factor + dx, h->y * y_factor);
 		}
 		even = !even;
 	}
 }
 
-bool HexMap::init_tiles(void)
+void HexMap::init_tiles(void)
 {
 	m_data = std::vector<HexTile>();
 	for (int y = 0; y < m_buffer_h; y++) {
-		for (int x = 0; x < m_buffer_w; x++) {
+		for (int x = 0; x < m_buffer_w; x++)
 			m_data.push_back(HexTile(this, x, y));
-		}
 	}
-	return true;
 }
 
-bool HexMap::delineate_map(void)
+void HexMap::delineate_map(void)
 {
 	int i = m_width_buffer;
 	bool even = false;
@@ -111,17 +113,12 @@ bool HexMap::delineate_map(void)
 	for (int y = 0; y < m_buffer_h; y++) {
 		for (int j = 0; j < i; j++)
 			matrix_at(j, y)->invalidate();
-
 		for (int k = 1; k < m_width_buffer - i + 1; k++)
 			matrix_at(-k, y)->invalidate();
-
 		if (even)
 			i -= 1;
-
 		even = !even;
 	}
-
-	return true;
 }
 
 bool HexMap::load_map_data(void)

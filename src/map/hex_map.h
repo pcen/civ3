@@ -22,15 +22,12 @@ public:
 
 private:
 	int m_width_buffer;
-	int m_buffer_w, m_buffer_h;
-	int m_hex_w, m_hex_h;
+	int m_buffer_w, m_buffer_h, m_hex_w, m_hex_h;
 
-	
 	std::vector<HexTile> m_data;
 
-
-	bool init_tiles(void);
-	bool delineate_map(void);
+	void init_tiles(void);
+	void delineate_map(void);
 	bool load_map_data(void);
 };
 

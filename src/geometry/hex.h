@@ -31,6 +31,7 @@ private:
 	unsigned int* index_data(void);
 	void gen_ib(void);
 	void gen_va(void);
+
 	void indices_hex_add(SingleHex& hex);
 	void mesh_hex_add(SingleHex& hex);
 

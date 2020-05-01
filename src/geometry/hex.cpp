@@ -1,23 +1,33 @@
 #include "hex.h"
 #include "utils/math.h"
 
-#define HEX_VERT_NUM   18
+#define HEX_VERT_NUM   12
+#define TEX_COORD_NUM  12
 #define HEX_POINTS_NUM 6
 
 const float HEX_VERTICIES[HEX_VERT_NUM] = {
-	 0.0f,        1.0f,       0.0f, // vert 0
-	 cos(30.0f),  sin(30.0f), 0.0f, // vert 1
-	 cos(30.0f), -sin(30.0f), 0.0f, // vert 2
-	 0.0f,       -1.0f,       0.0f, // vert 3
-	-cos(30.0f), -sin(30.0f), 0.0f, // vert 4
-	-cos(30.0f),  sin(30.0f), 0.0f  // vert 5
+	 0.0f,        1.0f,       // vert 0
+	 cos(30.0f),  sin(30.0f), // vert 1
+	 cos(30.0f), -sin(30.0f), // vert 2
+	 0.0f,       -1.0f,       // vert 3
+	-cos(30.0f), -sin(30.0f), // vert 4
+	-cos(30.0f),  sin(30.0f), // vert 5
+};
+
+const float HEX_TEXTURE_COORDS[TEX_COORD_NUM] = {
+	0.5f,  1.0f,
+	1.0f,  0.75f,
+	1.0f,  0.25f,
+	0.5f,  0.0f,
+	0.0f,  0.25f,
+	0.0f,  0.75f,
 };
 
 const unsigned int HEX_INDICES[12] = {
 	1, 2, 4, // right
 	1, 4, 5, // left
 	0, 1, 5, // top
-	2, 3, 4  // bottom
+	2, 3, 4, // bottom
 };
 
 SingleHex::SingleHex(float x, float y, float z)
@@ -56,7 +66,10 @@ void HexBatch::gen_va(void)
 {
 	gen_ib();
 	auto vb = Split::create_vertex_buffer(vertex_data(), vertex_count(), STATIC_DRAW);
-	vb->attributes = { {"points", 3} };
+	vb->attributes = {
+		{ "points", 2 },
+		{ "tex", 2 }
+	};
 	m_va = Split::create_vertex_array(m_ib, vb);
 }
 
@@ -78,10 +91,14 @@ void HexBatch::indices_hex_add(SingleHex& hex)
 
 void HexBatch::mesh_hex_add(SingleHex& hex)
 {
-	for (char i = 0; i < HEX_VERT_NUM; i += 3) {
+	for (char i = 0; i < HEX_VERT_NUM; i += 2) {
 		m_verticies.push_back(HEX_VERTICIES[i] + hex.m_x);
 		m_verticies.push_back(HEX_VERTICIES[i + 1] + hex.m_y);
-		m_verticies.push_back(HEX_VERTICIES[i + 2] + hex.m_z);
+		/* TODO push texture coordinates according to
+		 * terrain type and current texture atlas
+		 */
+		m_verticies.push_back(HEX_TEXTURE_COORDS[i]);
+		m_verticies.push_back(HEX_TEXTURE_COORDS[i + 1]);
 	}
 }
 
