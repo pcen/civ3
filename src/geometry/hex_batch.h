@@ -13,7 +13,7 @@ struct SingleHex
 class HexBatch
 {
 public:
-	HexBatch();
+	HexBatch(float radius = 1.0f);
 	~HexBatch();
 
 	va_ref& get_va(void);
@@ -21,6 +21,7 @@ public:
 	void generate_mesh(void);
 
 private:
+	float m_radius;
 	va_ref m_va = nullptr;
 	ib_ref m_ib = nullptr;
 	Split::Shader* m_shader = nullptr;

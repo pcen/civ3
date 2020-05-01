@@ -1,10 +1,11 @@
 ﻿#include "hex_map.h"
-#include "utils/math.h"
+
+#define cos30 0.86602540378f
 
 /* HexMap implementation
  */
-HexMap::HexMap(int width, int height)
-	: m_hex_w{ width }, m_hex_h{ height }, batch{ new HexBatch() }
+HexMap::HexMap(int width, int height, float radius)
+	: m_hex_w{ width }, m_hex_h{ height }, batch{ new HexBatch(radius) }, m_hex_radius{ radius }
 {
 	/* first 2 hex rows stack evenly before column drops off rectangular edge
 	 */
@@ -41,50 +42,17 @@ HexTile* HexMap::matrix_at(int x, int y)
 	return &m_data.at(y * m_buffer_w + x);
 }
 
-void HexMap::print(void)
-{
-	std::cerr << "Hex Map:\n";
-	int index = 0;
-	for (auto& t : m_data) {
-		index++;
-		std::cerr << t.str();
-		if (index % m_buffer_w == 0)
-			std::cerr << "\n";
-		else
-			std::cerr << ", ";
-	}
-}
-
-void HexMap::print_symbols(void)
-{
-	bool odd = false;
-	for (int y = 0; y < m_buffer_h; y++) {
-		
-		std::stringstream ss;
-		if (odd)
-			ss << " ";
-
-		for (int x = 0; x < m_buffer_w; x++) {
-			if (matrix_at(x, y)->valid)
-				ss << matrix_at(x, y)->symbol << " ";
-		}
-
-		odd = !odd;
-		std::cerr << ss.str() << "\n";
-	}
-}
-
 void HexMap::batch_tiles(void)
 {
 	bool even = true;
-	float y_factor = 3.0f * (cos(30.0f) * tan(30.0f));
-	float x_factor = 2 * cos(30.0f);
+	float y_factor = 1.5f * m_hex_radius;
+	float x_factor = 2 * cos30 * m_hex_radius;
 	float dx = 0.0f;
-	
+
 	for (int y = 0; y < m_buffer_h; y++) {
 		int null = 0;
 		for (int x = 0; x < m_buffer_w; x++) {
-			dx = even ? 0.0f : -cos(30.0f);
+			dx = even ? 0.0f : -cos30 * m_hex_radius;
 
 			auto h = matrix_at(x, y);
 			if (!h->valid)
@@ -112,9 +80,9 @@ void HexMap::delineate_map(void)
 
 	for (int y = 0; y < m_buffer_h; y++) {
 		for (int j = 0; j < i; j++)
-			matrix_at(j, y)->invalidate();
+			matrix_at(j, y)->valid = false;
 		for (int k = 1; k < m_width_buffer - i + 1; k++)
-			matrix_at(-k, y)->invalidate();
+			matrix_at(-k, y)->valid = false;
 		if (even)
 			i -= 1;
 		even = !even;
@@ -127,30 +95,31 @@ bool HexMap::load_map_data(void)
 	return false;
 }
 
+void HexMap::print(void)
+{
+	std::cerr << "Hex Map:\n";
+	int index = 0;
+	for (auto& t : m_data) {
+		index++;
+		std::cerr << t.str();
+		if (index % m_buffer_w == 0)
+			std::cerr << "\n";
+		else
+			std::cerr << ", ";
+	}
+}
+
 /* HexTile implementation
  */
 HexTile::HexTile(HexMap* parent, int x, int y, bool is_valid)
-	: map{ parent }, x{ x }, y{ y }, valid{ is_valid }, symbol{ "O" } {}
-
-void HexTile::invalidate(void)
-{
-	valid = false;
-	symbol = "_";
-}
+	: map{ parent }, x{ x }, y{ y }, valid{ is_valid } {}
 
 std::string HexTile::str(void)
 {
 	std::stringstream ss;
-	if (valid)
-		ss << "(" << x << " - " << y << ")";
-	else
-		ss << "invalid";
+	if (valid) ss << "(" << x << " - " << y << ")";
+	else ss << "invalid";
 	return ss.str();
-}
-
-int vec_min(glm::ivec2& v)
-{
-	return v.x < v.y ? v.x : v.y;
 }
 
 std::vector<HexTile*> HexTile::get_neighbors(void)
@@ -163,7 +132,7 @@ std::vector<HexTile*> HexTile::get_neighbors(void)
 	std::vector<HexTile*> neighbors;
 
 	for (auto& c : coords_to_check) {
-		if (vec_min(c) >= 0) {
+		if (c.x >= 0 && c.y >= 0) {
 			HexTile* neighbor = map->matrix_at(c.x, c.y);
 			if (neighbor->valid)
 				neighbors.push_back(neighbor);

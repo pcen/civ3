@@ -2,20 +2,19 @@
 #define HEX_MAP_H
 
 #include <Split>
-#include "geometry/hex.h"
+#include "geometry/hex_batch.h"
 
 struct HexTile;
 
 class HexMap
 {
 public:
-	HexMap(int width, int height);
+	HexMap(int width, int height, float radius = 1.0f);
 	~HexMap();
 
 	HexTile* hex_at(int x, int y);
 	HexTile* matrix_at(int x, int y);
 	void print(void);
-	void print_symbols(void);
 
 	void batch_tiles(void);
 	HexBatch* batch;
@@ -23,6 +22,7 @@ public:
 private:
 	int m_width_buffer;
 	int m_buffer_w, m_buffer_h, m_hex_w, m_hex_h;
+	float m_hex_radius;
 
 	std::vector<HexTile> m_data;
 
@@ -35,12 +35,10 @@ struct HexTile
 {
 	HexTile(HexMap* parent, int x, int y, bool is_valid = true);
 	
-	int x, y;
+	int x, y; // offset coordinates
 	HexMap* map;
 	bool valid;
-	std::string symbol;
 
-	void invalidate(void);
 	std::string str(void);
 	std::vector<HexTile*> get_neighbors(void);
 };

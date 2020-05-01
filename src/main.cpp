@@ -1,6 +1,6 @@
 #define SPLIT_MAIN
 #include <Split>
-#include "geometry/hex.h"
+#include "geometry/hex_batch.h"
 #include "map/hex_map.h"
 
 #define set_application(app_name) Split::Application* Split::create_application(void) { return new app_name(); }
@@ -22,34 +22,14 @@ class App : public Split::Application {
 		r.set_clear_colour({ 0.0f, 0.0f, 0.3f });
 		r.use_wireframe(false);
 
-		auto hm = new HexMap(1, 1);
+		auto hm = new HexMap(5, 5);
+		hm->print();
+		return;
+
 		hm->batch_tiles();
 		hm->batch->generate_mesh();
 		auto va = hm->batch->get_va();
 
-#if 0
-		/* test texture on square
-		 */
-		float square[24] = {
-			-3.5f, -0.5f,  0.0f, 0.0f,
-			-3.5f,  0.5f,  0.0f, 1.0f,
-			-2.5f,  0.5f,  1.0f, 1.0f,
-			-2.5f, -0.5f,  1.0f, 0.0f
-		};
-
-		unsigned int ind[6] = {
-			0, 1, 2, 2, 3, 0
-		};
-
-		auto vb = create_vertex_buffer(square, 24, STATIC_DRAW);
-		vb->attributes = {
-			{ "points", 2 },
-			{ "tex", 2 }
-		};
-		auto ib = create_index_buffer(ind, 6, STATIC_DRAW);
-
-		auto vertArr = create_vertex_array(ib, vb);
-#endif
 		auto tex = Texture2D("resources\\water.jpg", TextureFormat::JPEG, 4, TEXTURE_2D);
 		tex.bind();
 
@@ -58,7 +38,6 @@ class App : public Split::Application {
 			r.clear();
 			r.begin(proj * m_camera->get_view_matrix());
 			r.push(sh, va);
-			// r.push(sh, vertArr);
 			update();
 		}
 	}
