@@ -25,9 +25,11 @@ private:
 	float m_hex_radius;
 
 	std::vector<HexTile> m_data;
+	std::unordered_map<int, HexTile*> m_axial_map;
 
 	void init_tiles(void);
 	void delineate_map(void);
+	void populate_axial_mapping(void);
 	bool load_map_data(void);
 };
 
@@ -35,7 +37,10 @@ struct HexTile
 {
 	HexTile(HexMap* parent, int x, int y, bool is_valid = true);
 	
+	void set_axial_coordinates(void);
+
 	int x, y; // offset coordinates
+	int q, r, s; // axial (cube) coordinates
 	HexMap* map;
 	bool valid;
 

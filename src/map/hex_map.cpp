@@ -1,4 +1,5 @@
 ﻿#include "hex_map.h"
+#include "utils/math.h"
 
 #define cos30 0.86602540378f
 
@@ -14,6 +15,7 @@ HexMap::HexMap(int width, int height, float radius)
 	m_buffer_h = height;
 	init_tiles();
 	delineate_map();
+	populate_axial_mapping();
 }
 
 HexMap::~HexMap()
@@ -42,6 +44,8 @@ HexTile* HexMap::matrix_at(int x, int y)
 	return &m_data.at(y * m_buffer_w + x);
 }
 
+/* Create vertex buffer for terrain hex
+ */
 void HexMap::batch_tiles(void)
 {
 	bool even = true;
@@ -78,6 +82,8 @@ void HexMap::delineate_map(void)
 	int i = m_width_buffer;
 	bool even = false;
 
+	/* invalidate unused buffer indices
+	 */
 	for (int y = 0; y < m_buffer_h; y++) {
 		for (int j = 0; j < i; j++)
 			matrix_at(j, y)->valid = false;
@@ -86,6 +92,32 @@ void HexMap::delineate_map(void)
 		if (even)
 			i -= 1;
 		even = !even;
+	}
+
+	/* adjust offset coordinates
+	 */
+	for (int y = 0; y < m_buffer_h; y++) {
+		int null = 0;
+		for (int x = 0; x < m_buffer_w; x++) {
+			auto h = matrix_at(x, y);
+			if (!h->valid) {
+				null++;
+			}
+			else {
+				h->x -= (m_hex_w / 2 + null);
+				h->y -= (m_hex_h / 2);
+				h->set_axial_coordinates();
+			}
+		}
+	}
+}
+
+void HexMap::populate_axial_mapping(void)
+{
+	for (auto& hex : m_data) {
+		if (hex.valid) {
+			m_axial_map[dovetail(hex.q, hex.r)] = &hex;
+		}
 	}
 }
 
@@ -112,14 +144,21 @@ void HexMap::print(void)
 /* HexTile implementation
  */
 HexTile::HexTile(HexMap* parent, int x, int y, bool is_valid)
-	: map{ parent }, x{ x }, y{ y }, valid{ is_valid } {}
+	: map{ parent }, x{ x }, y{ y }, q{ 0 }, r{ 0 }, s{ 0 }, valid{ is_valid } {}
 
 std::string HexTile::str(void)
 {
 	std::stringstream ss;
-	if (valid) ss << "(" << x << " - " << y << ")";
-	else ss << "invalid";
+	if (valid) ss << "(" << x << ",  " << y << ")" << " (" << q << ", " << r << ")";
+	else ss << "invalid invalid";
 	return ss.str();
+}
+
+void HexTile::set_axial_coordinates(void)
+{
+	q = x - (y - (y & 1)) / 2;
+	r = y;
+	s = -q - r;
 }
 
 std::vector<HexTile*> HexTile::get_neighbors(void)
