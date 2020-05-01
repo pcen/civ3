@@ -14,8 +14,7 @@ HexMap::HexMap(int width, int height, float radius)
 	m_buffer_w = width + m_width_buffer;
 	m_buffer_h = height;
 	init_tiles();
-	delineate_map();
-	populate_axial_mapping();
+	set_coordinates();
 }
 
 HexMap::~HexMap()
@@ -27,7 +26,6 @@ HexTile* HexMap::hex_at(int x, int y)
 {
 	if (x < 0 || y < 0)
 		std::cerr << "ERROR: invalid hex index: (" << x << ", " << y << ")\n";
-
 	return &m_data.at(y * m_buffer_w + x + m_width_buffer);
 }
 
@@ -37,11 +35,17 @@ HexTile* HexMap::matrix_at(int x, int y)
 		x += m_buffer_w;
 	if (y < 0)
 		y += m_buffer_h;
-
 	if (x < 0 || y < 0 || y * m_buffer_w + x >= m_data.size())
 		std::cerr << "ERROR: invalid matrix index: (" << x << ", " << y << ")\n";
-
 	return &m_data.at(y * m_buffer_w + x);
+}
+
+HexTile* HexMap::axial_at(int q, int r)
+{
+	if (m_axial_map.count(dovetail(q, r)))
+		return m_axial_map[dovetail(q, r)];
+	else
+		return nullptr;
 }
 
 /* Create vertex buffer for terrain hex
@@ -77,7 +81,7 @@ void HexMap::init_tiles(void)
 	}
 }
 
-void HexMap::delineate_map(void)
+void HexMap::set_coordinates(void)
 {
 	int i = m_width_buffer;
 	bool even = false;
@@ -94,7 +98,7 @@ void HexMap::delineate_map(void)
 		even = !even;
 	}
 
-	/* adjust offset coordinates
+	/* adjust offset coordinates and generate axial ones
 	 */
 	for (int y = 0; y < m_buffer_h; y++) {
 		int null = 0;
@@ -107,16 +111,8 @@ void HexMap::delineate_map(void)
 				h->x -= (m_hex_w / 2 + null);
 				h->y -= (m_hex_h / 2);
 				h->set_axial_coordinates();
+				m_axial_map[dovetail(h->q, h->r)] = h;
 			}
-		}
-	}
-}
-
-void HexMap::populate_axial_mapping(void)
-{
-	for (auto& hex : m_data) {
-		if (hex.valid) {
-			m_axial_map[dovetail(hex.q, hex.r)] = &hex;
 		}
 	}
 }
@@ -149,8 +145,8 @@ HexTile::HexTile(HexMap* parent, int x, int y, bool is_valid)
 std::string HexTile::str(void)
 {
 	std::stringstream ss;
-	if (valid) ss << "(" << x << ",  " << y << ")" << " (" << q << ", " << r << ")";
-	else ss << "invalid invalid";
+	if (valid) ss << " (" << q << ", " << r << ")";
+	else ss << "invalid";
 	return ss.str();
 }
 
@@ -178,4 +174,13 @@ std::vector<HexTile*> HexTile::get_neighbors(void)
 		}
 	}
 	return neighbors;
+}
+
+unsigned int distance(HexTile* h1, HexTile* h2)
+{
+	if (!h1 || !h2) {
+		std::cerr << "ERROR: nullptr hex in distance computation.\n";
+		return 0;
+	}
+	return (std::abs(h1->q - h2->q) + std::abs(h1->s - h2->s) + std::abs(h1->r - h2->r)) / 2;
 }

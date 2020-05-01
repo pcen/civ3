@@ -14,6 +14,7 @@ public:
 
 	HexTile* hex_at(int x, int y);
 	HexTile* matrix_at(int x, int y);
+	HexTile* axial_at(int q, int r);
 	void print(void);
 
 	void batch_tiles(void);
@@ -28,8 +29,7 @@ private:
 	std::unordered_map<int, HexTile*> m_axial_map;
 
 	void init_tiles(void);
-	void delineate_map(void);
-	void populate_axial_mapping(void);
+	void set_coordinates(void);
 	bool load_map_data(void);
 };
 
@@ -47,5 +47,7 @@ struct HexTile
 	std::string str(void);
 	std::vector<HexTile*> get_neighbors(void);
 };
+
+unsigned int distance(HexTile* h1, HexTile* h2);
 
 #endif /* HEX_MAP_H */
