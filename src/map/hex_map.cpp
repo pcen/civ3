@@ -1,6 +1,8 @@
 ﻿#include "hex_map.h"
 #include "utils/math.h"
 
+#include <Split>
+
 #define cos30 0.86602540378f
 
 /* HexMap implementation

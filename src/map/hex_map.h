@@ -1,7 +1,7 @@
 #ifndef HEX_MAP_H
 #define HEX_MAP_H
 
-#include <Split>
+#include "defs/defs.h"
 #include "geometry/hex_batch.h"
 
 struct HexTile;

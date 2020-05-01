@@ -1,6 +1,8 @@
 #include "hex_batch.h"
 #include "utils/math.h"
 
+#include <Split>
+
 #define HEX_VERT_NUM   12
 #define TEX_COORD_NUM  12
 #define HEX_POINTS_NUM 6
