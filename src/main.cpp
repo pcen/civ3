@@ -2,6 +2,7 @@
 #include <Split>
 #include "geometry/hex_batch.h"
 #include "map/hex_map.h"
+#include "graphics/map_camera.h"
 
 #define set_application(app_name) Split::Application* Split::create_application(void) { return new app_name(); }
 
@@ -11,9 +12,8 @@ class App : public Split::Application {
 
 	void run(void)
 	{
-		m_window->capture_cursor(true);
-
-		glm::mat4 proj = glm::perspective(glm::radians(45.0f), m_window->aspect_ratio(), 0.01f, 200.0f);
+		set_camera(new MapCamera({0, 0, 6}, m_window->get_size()));
+		m_window->capture_cursor(false);
 
 		auto sh = create_shader("resources\\vert.glsl", "resources\\pixel.glsl");
 		sh->bind();
@@ -35,7 +35,7 @@ class App : public Split::Application {
 		while (m_running)
 		{
 			r.clear();
-			r.begin(proj * m_camera->get_view_matrix());
+			r.begin(m_camera->get_view_matrix());
 			r.push(sh, va);
 			update();
 		}

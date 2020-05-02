@@ -13,6 +13,9 @@ MapCamera::MapCamera(glm::vec3 position, glm::ivec2 screen_size)
 	m_real_speed = 0.0f;
 	m_mouse_on_screen = false;
 	m_move_threshold = 40;
+	m_ratio = 60.0f / 800.0f;
+	m_fov = glm::radians(m_ratio * m_screen_size.y);
+	m_proj_matrix = glm::perspective(m_fov, aspect_ratio(), 0.01f, 100.0f);
 	update_view_matrix();
 	event_bus_subscribe();
 }
@@ -58,6 +61,8 @@ void MapCamera::update_view_matrix(void)
 void MapCamera::on_window_resize(Split::WindowResize& resize)
 {
 	m_screen_size = resize.dimensions();
+	m_fov = glm::radians(m_ratio * m_screen_size.y);
+	m_proj_matrix = glm::perspective(m_fov, aspect_ratio(), 0.01f, 100.0f);
 }
 
 void MapCamera::on_key_press(Split::KeyPress& key)
@@ -77,7 +82,12 @@ void MapCamera::event_bus_subscribe(void)
 	callback_subscribe(&MapCamera::on_mouse_window_border);
 }
 
-glm::mat4& MapCamera::get_view_matrix(void) { return m_view_matrix; }
+float MapCamera::aspect_ratio(void) { return (float)m_screen_size.x / (float)m_screen_size.y; }
+
+glm::mat4& MapCamera::get_view_matrix(void)
+{
+	return m_proj_matrix * m_view_matrix;
+}
 
 void MapCamera::set_sensitivity(float sensitivity) { m_sensitivity = sensitivity; }
 
