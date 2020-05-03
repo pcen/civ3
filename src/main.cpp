@@ -4,8 +4,6 @@
 #include "map/hex_map.h"
 #include "graphics/map_camera.h"
 
-#define set_application(app_name) Split::Application* Split::create_application(void) { return new app_name(); }
-
 using namespace Split;
 
 class App : public Split::Application {
@@ -19,7 +17,6 @@ class App : public Split::Application {
 		sh->bind();
 
 		Split::Renderer r;
-		r.set_clear_colour({ 0.0f, 0.8f, 0.3f });
 
 		auto hm = new HexMap(5, 5);
 		hm->batch_tiles();
@@ -39,4 +36,4 @@ class App : public Split::Application {
 	}
 };
 
-set_application(App)
+set_split_app(App)

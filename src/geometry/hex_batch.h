@@ -26,7 +26,7 @@ private:
 	ib_ref m_ib = nullptr;
 	Split::Shader* m_shader = nullptr;
 
-	unsigned long long vertex_count(void);
+	unsigned int vertex_count(void);
 	int index_count(void);
 	float* vertex_data(void);
 	unsigned int* index_data(void);

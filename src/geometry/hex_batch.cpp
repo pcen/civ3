@@ -116,7 +116,7 @@ unsigned int* HexBatch::index_data(void)
 	return m_indices.data();
 }
 
-unsigned long long HexBatch::vertex_count(void)
+unsigned int HexBatch::vertex_count(void)
 {
 	return m_verticies.size();
 }
