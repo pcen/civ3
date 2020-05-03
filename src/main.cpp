@@ -12,19 +12,16 @@ class App : public Split::Application {
 
 	void run(void)
 	{
-		set_camera(new MapCamera({0, 0, 6}, m_window->get_size()));
+		set_camera(new MapCamera({0, 0, 1}, m_window->get_size()));
 		m_window->capture_cursor(false);
 
 		auto sh = create_shader("resources\\vert.glsl", "resources\\pixel.glsl");
 		sh->bind();
 
 		Split::Renderer r;
-		r.set_clear_colour({ 0.0f, 0.0f, 0.3f });
-		r.use_wireframe(false);
+		r.set_clear_colour({ 0.0f, 0.8f, 0.3f });
 
 		auto hm = new HexMap(5, 5);
-		hm->print();
-
 		hm->batch_tiles();
 		hm->batch->generate_mesh();
 		auto va = hm->batch->get_va();
@@ -35,7 +32,7 @@ class App : public Split::Application {
 		while (m_running)
 		{
 			r.clear();
-			r.begin(m_camera->get_view_matrix());
+			r.begin(m_camera->get_matrix());
 			r.push(sh, va);
 			update();
 		}
