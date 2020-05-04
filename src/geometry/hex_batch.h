@@ -1,13 +1,16 @@
 #ifndef HEX_H
 #define HEX_H
 
+#include "map/terrain_types.h"
+
 #include "defs/defs.h"
 
 struct SingleHex
 {
-	SingleHex(float x, float y, float z = 0.0f);
+	SingleHex(float x, float y, terrain_type type);
 	~SingleHex();
-	float m_x, m_y, m_z;
+	float m_x, m_y;
+	terrain_type m_type;
 };
 
 class HexBatch
@@ -17,7 +20,7 @@ public:
 	~HexBatch();
 
 	va_ref& get_va(void);
-	void add(float x, float y);
+	void add(float x, float y, terrain_type type);
 	void generate_mesh(void);
 
 private:

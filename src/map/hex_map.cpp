@@ -1,12 +1,12 @@
 ﻿#include "hex_map.h"
+#include "hex_tile.h"
+#include "terrain_types.h"
 #include "utils/math.h"
 
 #include <Split>
 
 #define cos30 0.86602540378f
 
-/* HexMap implementation
- */
 HexMap::HexMap(int width, int height, float radius)
 	: m_hex_w{ width }, m_hex_h{ height }, batch{ new HexBatch(radius) }, m_hex_radius{ radius }
 {
@@ -69,7 +69,7 @@ void HexMap::batch_tiles(void)
 				null++;
 			}
 			else {
-				batch->add((x - null) * x_factor + dx, y * y_factor);
+				batch->add((x - null) * x_factor + dx, y * y_factor, h->type);
 				/* the world coordinates of each hex are the centre of
 				 * the hex's wireframe
 				 */
@@ -85,7 +85,7 @@ void HexMap::init_tiles(void)
 	m_data = std::vector<HexTile>();
 	for (int y = 0; y < m_buffer_h; y++) {
 		for (int x = 0; x < m_buffer_w; x++)
-			m_data.push_back(HexTile(this, x, y));
+			m_data.push_back(HexTile(this, x, y, terrain_type::OCEAN));
 	}
 }
 
@@ -143,59 +143,4 @@ void HexMap::print(void)
 		else
 			std::cerr << ", ";
 	}
-}
-
-/* HexTile implementation
- */
-HexTile::HexTile(HexMap* parent, int x, int y, bool is_valid)
-	: map{ parent }, x{ x }, y{ y }, q{ 0 }, r{ 0 }, s{ 0 },
-	valid{ is_valid }, world_x{ 0.0f }, world_y{ 0.0f } {}
-
-std::string HexTile::str(void)
-{
-	std::stringstream ss;
-	if (valid) ss << " (" << world_x << ", " << world_y << ")";
-	else ss << "invalid";
-	return ss.str();
-}
-
-void HexTile::set_axial_coordinates(void)
-{
-	q = x - (y - (y & 1)) / 2;
-	r = y;
-	s = -q - r;
-}
-
-std::vector<HexTile*> HexTile::get_neighbors(void)
-{
-	glm::ivec2 coords_to_check[6] = {
-		{x - 1, y    }, {x + 1, y    },
-		{x,     y + 1}, {x,     y - 1},
-		{x - 1, y + 1}, {x + 1, y - 1}};
-
-	std::vector<HexTile*> neighbors;
-
-	for (auto& c : coords_to_check) {
-		if (c.x >= 0 && c.y >= 0) {
-			HexTile* neighbor = map->matrix_at(c.x, c.y);
-			if (neighbor->valid)
-				neighbors.push_back(neighbor);
-		}
-	}
-	return neighbors;
-}
-
-void HexTile::set_world_coords(float wx, float wy)
-{
-	world_x = wx;
-	world_y = wy;
-}
-
-unsigned int distance(HexTile* h1, HexTile* h2)
-{
-	if (!h1 || !h2) {
-		std::cerr << "ERROR: nullptr hex in distance computation.\n";
-		return 0;
-	}
-	return (std::abs(h1->q - h2->q) + std::abs(h1->s - h2->s) + std::abs(h1->r - h2->r)) / 2;
 }

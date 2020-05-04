@@ -34,8 +34,8 @@ const unsigned int HEX_INDICES[12] = {
 	2, 3, 4, // bottom
 };
 
-SingleHex::SingleHex(float x, float y, float z)
-	: m_x{x}, m_y{y}, m_z{z} {}
+SingleHex::SingleHex(float x, float y, terrain_type type)
+	: m_x{ x }, m_y{ y }, m_type{ type } {}
 
 SingleHex::~SingleHex() {}
 
@@ -56,9 +56,9 @@ va_ref& HexBatch::get_va(void)
 	return m_va;
 }
 
-void HexBatch::add(float x, float y)
+void HexBatch::add(float x, float y, terrain_type type)
 {
-	m_hexs.push_back(SingleHex(x, y));
+	m_hexs.push_back(SingleHex(x, y, type));
 }
 
 void HexBatch::gen_ib(void)

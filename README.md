@@ -1,1 +1,1 @@
-This WIP game is built using my own game engine.
+WIP game I'm writing in conjunction with and using my own game engine.
