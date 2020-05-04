@@ -6,7 +6,7 @@
 
 using namespace Split;
 
-class App : public Split::Application {
+class App : public Application {
 
 	void run(void)
 	{
@@ -16,12 +16,13 @@ class App : public Split::Application {
 		auto sh = create_shader("resources\\vert.glsl", "resources\\pixel.glsl");
 		sh->bind();
 
-		Split::Renderer r;
+		Renderer r;
 
-		auto hm = new HexMap(5, 5);
+		auto hm = new HexMap(3, 3);
 		hm->batch_tiles();
 		hm->batch->generate_mesh();
 		auto va = hm->batch->get_va();
+		hm->print();
 
 		auto tex = Texture2D("resources\\water.jpg", TextureFormat::JPEG, 4, TEXTURE_2D);
 		tex.bind();

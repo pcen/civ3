@@ -4,11 +4,12 @@
 #include "events/event_bus_client.h"
 #include "rendering/cameras/camera.h"
 
-/* Forward declarations
+/* forward declarations
  */
 namespace Split
 {
 	struct mouse_data; class WindowResize;
+	class MousePress; class MouseMove;
 	class MouseWindowBorder; class KeyPress;
 };
 
@@ -27,18 +28,21 @@ private:
 	glm::mat4 m_view, m_proj, m_view_proj;
 	glm::vec3 m_position;
 	glm::ivec2 m_screen_size;
-	int m_screen_area;
+	glm::vec2 m_mouse_world_pos;
 
 	float m_view_w, m_view_h, m_zoom;
 	bool m_mouse_on_screen;
 	int m_move_threshold;
 
+	void update_matrix(void);
+	
 	bool move_in_x(Split::mouse_data& mouse);
 	bool move_in_y(Split::mouse_data& mouse);
 
-	float aspect_ratio(void);
-	void update_matrix(void);
-	
+	/* event callbacks
+	 */
+	void on_mouse_move(Split::MouseMove& mouse);
+	void on_mouse_click(Split::MousePress& mouse);
 	void on_window_resize(Split::WindowResize& resize);
 	void on_mouse_window_border(Split::MouseWindowBorder& event);
 	void on_key_press(Split::KeyPress& key);

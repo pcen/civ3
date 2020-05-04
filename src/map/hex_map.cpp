@@ -65,10 +65,16 @@ void HexMap::batch_tiles(void)
 			dx = even ? 0.0f : -cos30 * m_hex_radius;
 
 			auto h = matrix_at(x, y);
-			if (!h->valid)
+			if (!h->valid) {
 				null++;
-			else
+			}
+			else {
 				batch->add((x - null) * x_factor + dx, y * y_factor);
+				/* the world coordinates of each hex are the centre of
+				 * the hex's wireframe
+				 */
+				matrix_at(x, y)->set_world_coords((x - null) * x_factor + dx, y * y_factor);
+			}
 		}
 		even = !even;
 	}
@@ -142,12 +148,13 @@ void HexMap::print(void)
 /* HexTile implementation
  */
 HexTile::HexTile(HexMap* parent, int x, int y, bool is_valid)
-	: map{ parent }, x{ x }, y{ y }, q{ 0 }, r{ 0 }, s{ 0 }, valid{ is_valid } {}
+	: map{ parent }, x{ x }, y{ y }, q{ 0 }, r{ 0 }, s{ 0 },
+	valid{ is_valid }, world_x{ 0.0f }, world_y{ 0.0f } {}
 
 std::string HexTile::str(void)
 {
 	std::stringstream ss;
-	if (valid) ss << " (" << q << ", " << r << ")";
+	if (valid) ss << " (" << world_x << ", " << world_y << ")";
 	else ss << "invalid";
 	return ss.str();
 }
@@ -176,6 +183,12 @@ std::vector<HexTile*> HexTile::get_neighbors(void)
 		}
 	}
 	return neighbors;
+}
+
+void HexTile::set_world_coords(float wx, float wy)
+{
+	world_x = wx;
+	world_y = wy;
 }
 
 unsigned int distance(HexTile* h1, HexTile* h2)

@@ -41,11 +41,13 @@ struct HexTile
 
 	int x, y; // offset coordinates
 	int q, r, s; // axial (cube) coordinates
+	float world_x, world_y;
 	HexMap* map;
 	bool valid;
 
 	std::string str(void);
 	std::vector<HexTile*> get_neighbors(void);
+	void set_world_coords(float wx, float wy);
 };
 
 unsigned int distance(HexTile* h1, HexTile* h2);

@@ -3,8 +3,8 @@
 #include <Split>
 
 MapCamera::MapCamera(glm::vec3 position, glm::ivec2 screen_size)
-	: m_position{ position }, m_screen_area{ screen_size.x * screen_size.y },
-	m_screen_size{ screen_size }, m_view_w{ (float)screen_size.x }, m_view_h{ (float)screen_size.y },
+	: m_position{ position }, m_screen_size{ screen_size }, m_mouse_world_pos{ glm::vec2(0.0f, 0.0f) },
+	m_view_w{ (float)screen_size.x }, m_view_h{ (float)screen_size.y },
 	m_mouse_on_screen{ false }, m_speed{ 3.0f }, m_zoom{ 0.004f }, m_move_threshold{ 40 }
 {
 	m_proj = glm::ortho(-m_view_w * m_zoom, m_view_w * m_zoom, -m_view_h * m_zoom, m_view_h * m_zoom, -2.0f, 2.0f);
@@ -13,10 +13,7 @@ MapCamera::MapCamera(glm::vec3 position, glm::ivec2 screen_size)
 	event_bus_subscribe();
 }
 
-MapCamera::~MapCamera()
-{
-
-}
+MapCamera::~MapCamera() {}
 
 bool MapCamera::move_in_x(Split::mouse_data& mouse)
 {
@@ -54,18 +51,28 @@ void MapCamera::update_matrix(void)
 
 glm::mat4& MapCamera::get_matrix(void) { return m_view_proj; }
 
-float MapCamera::aspect_ratio(void) { return (float)m_screen_size.x / (float)m_screen_size.y; }
-
 /* Events
  */
 void MapCamera::on_window_resize(Split::WindowResize& resize)
 {
 	m_screen_size = resize.dimensions();
-	m_screen_area = m_screen_size.x * m_screen_size.y;
 	m_view_w = (float)m_screen_size.x;
 	m_view_h = (float)m_screen_size.y;
 	m_proj = glm::ortho(-m_view_w * m_zoom, m_view_w * m_zoom, -m_view_h * m_zoom, m_view_h * m_zoom, -2.0f, 2.0f);
 	update_matrix();
+}
+
+void MapCamera::on_mouse_move(Split::MouseMove& mouse)
+{
+	Split::mouse_data& m = Split::Input::get_mouse();
+	m_mouse_world_pos.x = m_position.x + (m.x - m_screen_size.x / 2.0f) * m_zoom * 2.0f;
+	m_mouse_world_pos.y = m_position.y + (m_screen_size.y / 2.0f - m.y) * m_zoom * 2.0f;
+}
+
+void MapCamera::on_mouse_click(Split::MousePress& mouse)
+{
+	Split::mouse_data& m = Split::Input::get_mouse();
+	std::cerr << "mouse at: " << m_mouse_world_pos.x << ", " << m_mouse_world_pos.y << "\n\n";
 }
 
 void MapCamera::on_key_press(Split::KeyPress& key)
@@ -73,14 +80,13 @@ void MapCamera::on_key_press(Split::KeyPress& key)
 	std::cerr << "MapCamera: " << key.keycode() << " pressed\n";
 }
 
-void MapCamera::on_mouse_window_border(Split::MouseWindowBorder& event)
-{
-	m_mouse_on_screen = event.entered();
-}
+void MapCamera::on_mouse_window_border(Split::MouseWindowBorder& event) { m_mouse_on_screen = event.entered(); }
 
 void MapCamera::event_bus_subscribe(void)
 {
 	callback_subscribe(&MapCamera::on_key_press);
+	callback_subscribe(&MapCamera::on_mouse_move);
+	callback_subscribe(&MapCamera::on_mouse_click);
 	callback_subscribe(&MapCamera::on_window_resize);
 	callback_subscribe(&MapCamera::on_mouse_window_border);
 }
