@@ -84,8 +84,12 @@ void HexMap::init_tiles(void)
 {
 	m_data = std::vector<HexTile>();
 	for (int y = 0; y < m_buffer_h; y++) {
-		for (int x = 0; x < m_buffer_w; x++)
-			m_data.push_back(HexTile(this, x, y, terrain_type::OCEAN));
+		for (int x = 0; x < m_buffer_w; x++) {
+			/* TODO write terrain generation with random noise function
+			 */
+			terrain_type type = y & 1 ? terrain_type::GRASS : terrain_type::OCEAN;
+			m_data.push_back(HexTile(this, x, y, type));
+		}
 	}
 }
 

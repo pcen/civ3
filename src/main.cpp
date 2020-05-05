@@ -24,7 +24,7 @@ class App : public Application {
 		auto va = hm->batch->get_va();
 		hm->print();
 
-		auto tex = Texture2D("resources\\water.jpg", TextureFormat::JPEG, 4, TEXTURE_2D);
+		auto tex = Texture2D("resources\\atlas.jpg", TextureFormat::JPEG, 4, TEXTURE_2D);
 		tex.bind();
 
 		while (m_running)
