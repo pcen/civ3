@@ -58,7 +58,7 @@ void HexMap::batch_tiles(void)
 	for (int y = 0; y < m_buffer_h; y++) {
 		int null = 0;
 		for (int x = 0; x < m_buffer_w; x++) {
-			dx = even ? 0.0f : -cos30 * m_hex_radius;
+			dx = even ? 0.0f : cos30 * m_hex_radius;
 			auto h = matrix_at(x, y);
 			if (!h->valid) {
 				null++;

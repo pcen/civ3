@@ -16,8 +16,8 @@ std::string HexTile::str(void)
 
 void HexTile::set_axial_coordinates(void)
 {
-	q = x - (y - (y & 1)) / 2;
-	r = y;
+	q = x - (-y - (y & 1)) / 2;
+	r = -y;
 	s = -q - r;
 }
 
