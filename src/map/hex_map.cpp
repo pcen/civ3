@@ -5,13 +5,9 @@
 
 #include <Split>
 
-#define cos30 0.86602540378f
-
 HexMap::HexMap(int width, int height, float radius)
 	: m_hex_w{ width }, m_hex_h{ height }, batch{ new HexBatch(radius) }, m_hex_radius{ radius }
 {
-	/* first 2 hex rows stack evenly before column drops off rectangular edge
-	 */
 	m_width_buffer = (int)std::ceil((float)(height - 2) / 2.0f);
 	m_buffer_w = width + m_width_buffer;
 	m_buffer_h = height;
@@ -44,7 +40,7 @@ HexTile* HexMap::matrix_at(int x, int y)
 
 HexTile* HexMap::axial_at(int q, int r)
 {
-	if (m_axial_map.count(dovetail(q, r)))
+	if (m_axial_map.count(dovetail(q, r)) != 0)
 		return m_axial_map[dovetail(q, r)];
 	else
 		return nullptr;
@@ -63,7 +59,6 @@ void HexMap::batch_tiles(void)
 		int null = 0;
 		for (int x = 0; x < m_buffer_w; x++) {
 			dx = even ? 0.0f : -cos30 * m_hex_radius;
-
 			auto h = matrix_at(x, y);
 			if (!h->valid) {
 				null++;
@@ -97,7 +92,6 @@ void HexMap::set_coordinates(void)
 {
 	int i = m_width_buffer;
 	bool even = false;
-
 	/* invalidate unused buffer indices
 	 */
 	for (int y = 0; y < m_buffer_h; y++) {
@@ -109,7 +103,6 @@ void HexMap::set_coordinates(void)
 			i -= 1;
 		even = !even;
 	}
-
 	/* adjust offset coordinates and generate axial ones
 	 */
 	for (int y = 0; y < m_buffer_h; y++) {
@@ -120,8 +113,8 @@ void HexMap::set_coordinates(void)
 				null++;
 			}
 			else {
-				h->x -= (m_hex_w / 2 + null);
-				h->y -= (m_hex_h / 2);
+				// h->x -= (m_hex_w / 2 + null);
+				// h->y -= (m_hex_h / 2);
 				h->set_axial_coordinates();
 				m_axial_map[dovetail(h->q, h->r)] = h;
 			}

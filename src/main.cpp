@@ -17,6 +17,7 @@ class App : public Application {
 		sh->bind();
 
 		Renderer r;
+		r.use_wireframe(true);
 
 		auto hm = new HexMap(3, 3);
 		hm->batch_tiles();

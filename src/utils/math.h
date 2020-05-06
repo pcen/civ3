@@ -5,6 +5,8 @@
 #define sin(angle) ((float)std::sin(glm::radians((angle))))
 #define tan(angle) ((float)std::tan(glm::radians((angle))))
 
+#define cos30 0.86602540378f
+
 /* used to dovetail axial coordinate pairs
  */
 int dovetail(int k1, int k2);

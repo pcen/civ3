@@ -9,7 +9,7 @@ HexTile::HexTile(HexMap* parent, int x, int y, terrain_type type, bool is_valid)
 std::string HexTile::str(void)
 {
 	std::stringstream ss;
-	if (valid) ss << " (" << world_x << ", " << world_y << ")";
+	if (valid) ss << " (" << q << ", " << r << ")";
 	else ss << "invalid";
 	return ss.str();
 }

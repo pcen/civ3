@@ -16,7 +16,7 @@ namespace Split
 class MapCamera : public Split::Camera, Split::EventBusListener
 {
 public:
-	MapCamera(glm::vec3 position, glm::ivec2 screen_size);
+	MapCamera(glm::vec3 position, glm::ivec2 screen_size, float hex_radius = 1.0f);
 	~MapCamera();
 
 	glm::mat4& get_matrix(void) override;
@@ -28,14 +28,19 @@ private:
 	glm::mat4 m_view, m_proj, m_view_proj;
 	glm::vec3 m_position;
 	glm::ivec2 m_screen_size;
+	float m_hex_radius;
+
 	glm::vec2 m_mouse_world_pos;
+	glm::ivec2 m_mouse_on_hex;
 
 	float m_view_w, m_view_h, m_zoom;
 	bool m_mouse_on_screen;
 	int m_move_threshold;
 
 	void update_matrix(void);
-	
+
+	void update_mouse_on_hex(void);
+
 	bool move_in_x(Split::mouse_data& mouse);
 	bool move_in_y(Split::mouse_data& mouse);
 

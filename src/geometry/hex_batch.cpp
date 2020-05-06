@@ -7,8 +7,6 @@
 #define HEX_VERT_NUM   12
 #define HEX_POINTS_NUM 6
 
-#define cos30 0.86602540378f
-
 const float HEX_VERTICIES[HEX_VERT_NUM] = {
 	 0.0f,   1.0f, // v0
 	 cos30,  0.5f, // v1

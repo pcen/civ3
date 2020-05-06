@@ -1,10 +1,11 @@
 #include "map_camera.h"
+#include "utils/math.h"
 
 #include <Split>
 
-MapCamera::MapCamera(glm::vec3 position, glm::ivec2 screen_size)
+MapCamera::MapCamera(glm::vec3 position, glm::ivec2 screen_size, float hex_radius)
 	: m_position{ position }, m_screen_size{ screen_size }, m_mouse_world_pos{ glm::vec2(0.0f, 0.0f) },
-	m_view_w{ (float)screen_size.x }, m_view_h{ (float)screen_size.y },
+	m_view_w{ (float)screen_size.x }, m_view_h{ (float)screen_size.y }, m_hex_radius{ hex_radius },
 	m_mouse_on_screen{ false }, m_speed{ 3.0f }, m_zoom{ 0.004f }, m_move_threshold{ 40 }
 {
 	m_proj = glm::ortho(-m_view_w * m_zoom, m_view_w * m_zoom, -m_view_h * m_zoom, m_view_h * m_zoom, -2.0f, 2.0f);
@@ -69,10 +70,30 @@ void MapCamera::on_mouse_move(Split::MouseMove& mouse)
 	m_mouse_world_pos.y = m_position.y + (m_screen_size.y / 2.0f - m.y) * m_zoom * 2.0f;
 }
 
+void MapCamera::update_mouse_on_hex(void)
+{
+	float qf = (m_mouse_world_pos.x * 0.57735026919f - 0.33333333333f * m_mouse_world_pos.y) / m_hex_radius;
+	float rf = (m_mouse_world_pos.y * 0.66666666666f) / m_hex_radius;
+	float sf = -qf - rf;
+	int q = int(std::round(qf));
+	int r = int(std::round(rf));
+	int s = int(std::round(sf));
+	double dq = std::abs((float)q - qf);
+	double dr = std::abs((float)r - rf);
+	double ds = std::abs((float)s - sf);
+	if (dq > dr && dq > ds)
+		q = -r - s;
+	else if (dr > ds)
+		r = -q - s;
+	m_mouse_on_hex.x = q;
+	m_mouse_on_hex.y = r;
+}
+
 void MapCamera::on_mouse_click(Split::MousePress& mouse)
 {
-	Split::mouse_data& m = Split::Input::get_mouse();
-	std::cerr << "mouse at: " << m_mouse_world_pos.x << ", " << m_mouse_world_pos.y << "\n\n";
+	update_mouse_on_hex();
+	std::cerr << "mouse: " << m_mouse_world_pos.x << ", " << m_mouse_world_pos.y << "\n";
+	std::cerr << "axial: " << m_mouse_on_hex.x << ", " << m_mouse_on_hex.y << "\n\n";
 }
 
 void MapCamera::on_key_press(Split::KeyPress& key)
