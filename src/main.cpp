@@ -19,7 +19,6 @@ class App : public Application {
 		sh->bind();
 
 		Renderer r;
-		r.use_wireframe(true);
 
 		int x, y;
 		std::cerr << "map width: "; std::cin >> x;

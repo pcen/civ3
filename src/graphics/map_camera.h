@@ -9,7 +9,7 @@
 namespace Split
 {
 	struct mouse_data; class WindowResize;
-	class MousePress; class MouseMove;
+	class MousePress; class MouseMove; class MouseScroll;
 	class MouseWindowBorder; class KeyPress;
 };
 
@@ -38,6 +38,7 @@ private:
 	int m_move_threshold;
 
 	void update_matrix(void);
+	void update_ortho(void);
 
 	void update_mouse_on_hex(void);
 
@@ -46,6 +47,7 @@ private:
 
 	/* event callbacks
 	 */
+	void on_mouse_scroll(Split::MouseScroll& scroll);
 	void on_mouse_move(Split::MouseMove& mouse);
 	void on_mouse_click(Split::MousePress& mouse);
 	void on_window_resize(Split::WindowResize& resize);

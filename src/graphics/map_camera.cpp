@@ -8,8 +8,7 @@ MapCamera::MapCamera(glm::vec3 position, glm::ivec2 screen_size, float hex_radiu
 	m_view_w{ (float)screen_size.x }, m_view_h{ (float)screen_size.y }, m_hex_radius{ hex_radius },
 	m_mouse_on_screen{ false }, m_speed{ 3.0f }, m_zoom{ 0.004f }, m_move_threshold{ 40 }
 {
-	m_proj = glm::ortho(-m_view_w * m_zoom, m_view_w * m_zoom, -m_view_h * m_zoom, m_view_h * m_zoom, -2.0f, 2.0f);
-
+	update_ortho();
 	update_matrix();
 	event_bus_subscribe();
 }
@@ -44,6 +43,11 @@ void MapCamera::update(double dt)
 		update_matrix();
 }
 
+void MapCamera::update_ortho(void)
+{
+	m_proj = glm::ortho(-m_view_w * m_zoom, m_view_w * m_zoom, -m_view_h * m_zoom, m_view_h * m_zoom, -2.0f, 2.0f);
+}
+
 void MapCamera::update_matrix(void)
 {
 	m_view = glm::inverse(glm::translate(glm::mat4(1.0f), m_position));
@@ -59,7 +63,20 @@ void MapCamera::on_window_resize(Split::WindowResize& resize)
 	m_screen_size = resize.dimensions();
 	m_view_w = (float)m_screen_size.x;
 	m_view_h = (float)m_screen_size.y;
-	m_proj = glm::ortho(-m_view_w * m_zoom, m_view_w * m_zoom, -m_view_h * m_zoom, m_view_h * m_zoom, -2.0f, 2.0f);
+	update_ortho();
+	update_matrix();
+}
+
+void MapCamera::on_mouse_scroll(Split::MouseScroll& scroll)
+{
+	m_zoom -= scroll.dy() * 0.0005;
+
+	if (m_zoom < 0.0015f)
+		m_zoom = 0.0015f;
+	else if (m_zoom > 0.008f)
+		m_zoom = 0.008f;
+
+	update_ortho();
 	update_matrix();
 }
 
@@ -107,6 +124,7 @@ void MapCamera::on_mouse_window_border(Split::MouseWindowBorder& event) { m_mous
 
 void MapCamera::event_bus_subscribe(void)
 {
+	callback_subscribe(&MapCamera::on_mouse_scroll);
 	callback_subscribe(&MapCamera::on_key_press);
 	callback_subscribe(&MapCamera::on_mouse_move);
 	callback_subscribe(&MapCamera::on_mouse_click);
