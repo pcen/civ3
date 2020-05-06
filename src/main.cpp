@@ -12,23 +12,19 @@ class App : public Application {
 	{
 		app_log_info("civ3 run start");
 
-		set_camera(new MapCamera({0, 0, 1}, m_window->get_size()));
+		set_camera(new MapCamera({0, 0}, m_window->get_size()));
 		m_window->capture_cursor(false);
 
 		auto sh = create_shader("resources\\vert.glsl", "resources\\pixel.glsl");
 		sh->bind();
 
 		Renderer r;
+		r.set_clear_colour({ 0.0f, 0.0f, 0.0f });
 
-		int x, y;
-		std::cerr << "map width: "; std::cin >> x;
-		std::cerr << "map height: "; std::cin >> y;
-
-		auto hm = new HexMap(x, y);
+		auto hm = new HexMap(96, 60);
 		hm->batch_tiles();
 		hm->batch->generate_mesh();
 		auto va = hm->batch->get_va();
-		hm->print();
 
 		auto tex = Texture2D("resources\\atlas.jpg", TextureFormat::JPEG, 4, TEXTURE_2D);
 		tex.bind();
