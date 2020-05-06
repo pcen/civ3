@@ -19,7 +19,11 @@ class App : public Application {
 		Renderer r;
 		r.use_wireframe(true);
 
-		auto hm = new HexMap(3, 3);
+		int x, y;
+		std::cerr << "map width: "; std::cin >> x;
+		std::cerr << "map height: "; std::cin >> y;
+
+		auto hm = new HexMap(x, y);
 		hm->batch_tiles();
 		hm->batch->generate_mesh();
 		auto va = hm->batch->get_va();

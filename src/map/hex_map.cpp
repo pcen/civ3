@@ -113,7 +113,7 @@ void HexMap::set_coordinates(void)
 				null++;
 			}
 			else {
-				// h->x -= (m_hex_w / 2 + null);
+				h->x -= null; // (m_hex_w / 2 + null);
 				// h->y -= (m_hex_h / 2);
 				h->set_axial_coordinates();
 				m_axial_map[dovetail(h->q, h->r)] = h;

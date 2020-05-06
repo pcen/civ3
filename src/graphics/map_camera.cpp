@@ -72,8 +72,10 @@ void MapCamera::on_mouse_move(Split::MouseMove& mouse)
 
 void MapCamera::update_mouse_on_hex(void)
 {
-	float qf = (m_mouse_world_pos.x * 0.57735026919f - 0.33333333333f * m_mouse_world_pos.y) / m_hex_radius;
-	float rf = (m_mouse_world_pos.y * 0.66666666666f) / m_hex_radius;
+	/*  q = x / 2cos(30)  +  y/3  */
+	float qf = (m_mouse_world_pos.x * 0.57735026919f + 0.33333333333f * m_mouse_world_pos.y) / m_hex_radius;
+	/*  r = -2y / 3  */
+	float rf = (-m_mouse_world_pos.y * 0.66666666666f) / m_hex_radius;
 	float sf = -qf - rf;
 	int q = int(std::round(qf));
 	int r = int(std::round(rf));
