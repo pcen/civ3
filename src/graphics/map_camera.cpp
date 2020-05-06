@@ -94,13 +94,13 @@ void MapCamera::update_mouse_on_hex(void)
 void MapCamera::on_mouse_click(Split::MousePress& mouse)
 {
 	update_mouse_on_hex();
-	std::cerr << "mouse: " << m_mouse_world_pos.x << ", " << m_mouse_world_pos.y << "\n";
-	std::cerr << "axial: " << m_mouse_on_hex.x << ", " << m_mouse_on_hex.y << "\n\n";
+	core_log_info("mouse: ({0}, {1})", m_mouse_world_pos.x, m_mouse_world_pos.y);
+	core_log_info("hex: ({0}, {1})\n", m_mouse_on_hex.x, m_mouse_on_hex.y);
 }
 
 void MapCamera::on_key_press(Split::KeyPress& key)
 {
-	std::cerr << "MapCamera: " << key.keycode() << " pressed\n";
+	core_log_info("MapCamera key pressed: {0}", key.keycode());
 }
 
 void MapCamera::on_mouse_window_border(Split::MouseWindowBorder& event) { m_mouse_on_screen = event.entered(); }

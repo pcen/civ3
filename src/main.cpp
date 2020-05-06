@@ -10,6 +10,8 @@ class App : public Application {
 
 	void run(void)
 	{
+		app_log_info("civ3 run start");
+
 		set_camera(new MapCamera({0, 0, 1}, m_window->get_size()));
 		m_window->capture_cursor(false);
 
@@ -39,6 +41,8 @@ class App : public Application {
 			r.push(sh, va);
 			update();
 		}
+
+		app_log_info("civ3 run end");
 	}
 };
 

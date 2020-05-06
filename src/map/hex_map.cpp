@@ -13,18 +13,13 @@ HexMap::HexMap(int width, int height, float radius)
 	m_buffer_h = height;
 	init_tiles();
 	set_coordinates();
+	app_log_info("{0} by {1} hex map generated with hex radius {2}", width, height, radius);
 }
 
 HexMap::~HexMap()
 {
 	delete batch;
-}
-
-HexTile* HexMap::hex_at(int x, int y)
-{
-	if (x < 0 || y < 0)
-		std::cerr << "ERROR: invalid hex index: (" << x << ", " << y << ")\n";
-	return &m_data.at(y * m_buffer_w + x + m_width_buffer);
+	app_log_info("Hex map destructed");
 }
 
 HexTile* HexMap::matrix_at(int x, int y)
@@ -33,17 +28,22 @@ HexTile* HexMap::matrix_at(int x, int y)
 		x += m_buffer_w;
 	if (y < 0)
 		y += m_buffer_h;
-	if (x < 0 || y < 0 || y * m_buffer_w + x >= m_data.size())
-		std::cerr << "ERROR: invalid matrix index: (" << x << ", " << y << ")\n";
+	if (x < 0 || y < 0 || y * m_buffer_w + x >= m_data.size()) {
+		app_log_error("Invalid hex-matrix index: ({0}, {1})", x, y);
+		return nullptr;
+	}
 	return &m_data.at(y * m_buffer_w + x);
 }
 
 HexTile* HexMap::axial_at(int q, int r)
 {
-	if (m_axial_map.count(dovetail(q, r)) != 0)
+	if (m_axial_map.count(dovetail(q, r)) != 0) {
 		return m_axial_map[dovetail(q, r)];
-	else
+	}
+	else {
+		app_log_warn("Axial coordinates q = {0}, r = {1} not in map", q, r);
 		return nullptr;
+	}
 }
 
 /* Create vertex buffer for terrain hex
@@ -65,9 +65,6 @@ void HexMap::batch_tiles(void)
 			}
 			else {
 				batch->add((x - null) * x_factor + dx, y * y_factor, h->type);
-				/* the world coordinates of each hex are the centre of
-				 * the hex's wireframe
-				 */
 				matrix_at(x, y)->set_world_coords((x - null) * x_factor + dx, y * y_factor);
 			}
 		}
@@ -77,6 +74,7 @@ void HexMap::batch_tiles(void)
 
 void HexMap::init_tiles(void)
 {
+	app_log_trace("Initializing hex map tiles");
 	m_data = std::vector<HexTile>();
 	for (int y = 0; y < m_buffer_h; y++) {
 		for (int x = 0; x < m_buffer_w; x++) {
@@ -90,6 +88,7 @@ void HexMap::init_tiles(void)
 
 void HexMap::set_coordinates(void)
 {
+	app_log_trace("Setting hex map coordinates");
 	int i = m_width_buffer;
 	bool even = false;
 	/* invalidate unused buffer indices
@@ -113,8 +112,7 @@ void HexMap::set_coordinates(void)
 				null++;
 			}
 			else {
-				h->x -= null; // (m_hex_w / 2 + null);
-				// h->y -= (m_hex_h / 2);
+				h->x -= null;
 				h->set_axial_coordinates();
 				m_axial_map[dovetail(h->q, h->r)] = h;
 			}
@@ -124,7 +122,7 @@ void HexMap::set_coordinates(void)
 
 bool HexMap::load_map_data(void)
 {
-	std::cerr << "ERROR: map data loading not implemented.\n";
+	app_log_error("Hex map data loading not implemented");
 	return false;
 }
 
