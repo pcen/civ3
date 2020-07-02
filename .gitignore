@@ -11,6 +11,9 @@ cpp.hint
 # Visual Studio Code
 .vscode
 
+# Config Files
+*.ini
+
 # Scripts
 *.sh
 *.bat
